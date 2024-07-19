@@ -1,14 +1,11 @@
 import { useEffect, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
-import { FcPlus } from 'react-icons/fc'
 
-import { putUpdateUser } from '../../../services/apiService'
-import { toast } from 'react-toastify';
 
 import _ from 'lodash'
 
-const ModalUpdateUser = (props) => {
+const ModalViewUser = (props) => {
     const { show, setShow, dataUpdate, fetchListUser, resetUpdateData } = props
     // const [show, setShow] = useState(false);
 
@@ -29,33 +26,7 @@ const ModalUpdateUser = (props) => {
     const [image, setImage] = useState("");
     const [previewImage, setPreviewImage] = useState("");
 
-    const handleUploadImage = (event) => {
-        if (event ?? event.target ?? event.target.files[0]) {
-            setPreviewImage(URL.createObjectURL(event.target.files[0]));
-            setImage(event.target.files[0]);
-        } else {
-            setPreviewImage("");
-        }
 
-        // console.log("upload file", event.target.files[0]);
-    }
-
-    const handleSubmitCreatUser = async () => {
-        //validate
-        //call api
-
-
-        const data = await putUpdateUser(dataUpdate.id, username, role, image);
-        console.log("==> res", data)
-        if (data && data.EC === 0) {
-            toast.success(data.EM);
-            handleClose();
-            fetchListUser();
-        }
-        if (data && data.EC !== 0) {
-            toast.error(data.EM);
-        }
-    }
 
     useEffect(() => {
         if (!_.isEmpty(dataUpdate)) {
@@ -67,6 +38,8 @@ const ModalUpdateUser = (props) => {
 
             if (dataUpdate && dataUpdate.image) {
                 setPreviewImage(`data:image/jpeg;base64,${dataUpdate.image}`)
+            } else {
+                setPreviewImage("");
             }
 
         }
@@ -76,7 +49,7 @@ const ModalUpdateUser = (props) => {
         <>
             <Modal show={show} onHide={handleClose} size="xl" backdrop="static" className='modal-add-user'>
                 <Modal.Header closeButton>
-                    <Modal.Title>Update a user</Modal.Title>
+                    <Modal.Title>Profile</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <form className="row g-3">
@@ -90,17 +63,17 @@ const ModalUpdateUser = (props) => {
                         </div>
                         <div className="col-md-6">
                             <label className="form-label">Username</label>
-                            <input type="text" className="form-control" value={username} onChange={(event) => setUsername(event.target.value)} />
+                            <input type="text" className="form-control" value={username} readOnly />
                         </div>
 
                         <div className="col-md-6">
                             <label className="form-label">Role</label>
-                            <select className="form-select" onChange={(event) => setRole(event.target.value)} value={role}>
+                            <select className="form-select" value={role} readOnly>
                                 <option value="USER">User</option>
                                 <option value="ADMIN">Admin</option>
                             </select>
                         </div>
-                        <div className='col-md-12'>
+                        {/* <div className='col-md-12'>
                             <label className='form-label label-upload' htmlFor='labelUpload'>
                                 <FcPlus />Upload File Image</label>
                             <input
@@ -108,10 +81,10 @@ const ModalUpdateUser = (props) => {
                                 hidden id="labelUpload"
                                 onChange={(event) => handleUploadImage(event)}
                             />
-                        </div>
+                        </div> */}
                         <div className='col-md-12 img-preview'>
                             {previewImage ?
-                                <img src={previewImage} />
+                                <img src={previewImage} readOnly />
                                 : <span>Preview Image</span>
                             }
 
@@ -123,13 +96,11 @@ const ModalUpdateUser = (props) => {
                     <Button variant="secondary" onClick={handleClose}>
                         Close
                     </Button>
-                    <Button variant="primary" onClick={() => handleSubmitCreatUser()}>
-                        Save
-                    </Button>
+
                 </Modal.Footer>
             </Modal>
         </>
     );
 }
 
-export default ModalUpdateUser;
+export default ModalViewUser;
