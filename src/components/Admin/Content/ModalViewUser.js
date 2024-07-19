@@ -6,7 +6,7 @@ import Modal from 'react-bootstrap/Modal';
 import _ from 'lodash'
 
 const ModalViewUser = (props) => {
-    const { show, setShow, dataUpdate, fetchListUser, resetUpdateData } = props
+    const { show, setShow, dataUpdate, resetUpdateData } = props
     // const [show, setShow] = useState(false);
 
     const handleClose = () => {

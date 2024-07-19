@@ -9,7 +9,7 @@ import { toast } from 'react-toastify';
 import _ from 'lodash'
 
 const ModalUpdateUser = (props) => {
-    const { show, setShow, dataUpdate, fetchListUser, resetUpdateData } = props
+    const { show, setShow, dataUpdate, resetUpdateData } = props
     // const [show, setShow] = useState(false);
 
     const handleClose = () => {
@@ -50,7 +50,8 @@ const ModalUpdateUser = (props) => {
         if (data && data.EC === 0) {
             toast.success(data.EM);
             handleClose();
-            fetchListUser();
+            props.setCurrentPage(1);
+            await props.fetchListUserWithPaginate(1);
         }
         if (data && data.EC !== 0) {
             toast.error(data.EM);
