@@ -1,13 +1,15 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import { FcPlus } from 'react-icons/fc'
 
-import { postCreateNewUser } from '../../../services/apiService'
+import { putUpdateUser } from '../../../services/apiService'
 import { toast } from 'react-toastify';
 
-const ModalCreateUser = (props) => {
-    const { show, setShow, fetchListUser } = props
+import _ from 'lodash'
+
+const ModalUpdateUser = (props) => {
+    const { show, setShow, dataUpdate, fetchListUser, resetUpdateData } = props
     // const [show, setShow] = useState(false);
 
     const handleClose = () => {
@@ -17,8 +19,9 @@ const ModalCreateUser = (props) => {
         setUsername("");
         setRole("USER");
         setImage("");
-
+        resetUpdateData();
     }
+
     const handleShow = () => setShow(true);
 
     const [email, setEmail] = useState("");
@@ -39,29 +42,12 @@ const ModalCreateUser = (props) => {
         // console.log("upload file", event.target.files[0]);
     }
 
-    const validateEmail = (email) => {
-        return String(email)
-            .toLowerCase()
-            .match(
-                /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-            );
-    };
-
     const handleSubmitCreatUser = async () => {
         //validate
-        const isValiEmail = validateEmail(email);
-        if (!isValiEmail) {
-            toast.error('Email invalid');
-            return;
-        }
-        if (!password) {
-            toast.error("Password invalid");
-            return;
-        }
         //call api
 
 
-        const data = await postCreateNewUser(email, password, username, role, image);
+        const data = await putUpdateUser(dataUpdate.id, username, role, image);
         console.log("==> res", data)
         if (data && data.EC === 0) {
             toast.success(data.EM);
@@ -73,21 +59,36 @@ const ModalCreateUser = (props) => {
         }
     }
 
+    useEffect(() => {
+        if (!_.isEmpty(dataUpdate)) {
+            //update state
+            setEmail(dataUpdate.email);
+            setPassword(dataUpdate.password);
+            setUsername(dataUpdate.username);
+            setRole(dataUpdate.role);
+
+            if (dataUpdate && dataUpdate.image) {
+                setPreviewImage(`data:image/jpeg;base64,${dataUpdate.image}`)
+            }
+
+        }
+    }, [dataUpdate])
+
     return (
         <>
             <Modal show={show} onHide={handleClose} size="xl" backdrop="static" className='modal-add-user'>
                 <Modal.Header closeButton>
-                    <Modal.Title>Add new user</Modal.Title>
+                    <Modal.Title>Update a user</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <form className="row g-3">
                         <div className="col-md-6">
                             <label className="form-label">Email</label>
-                            <input type="email" className="form-control" value={email} onChange={(event) => setEmail(event.target.value)} />
+                            <input type="email" className="form-control" value={email} disabled onChange={(event) => setEmail(event.target.value)} />
                         </div>
                         <div className="col-md-6">
                             <label className="form-label">Password</label>
-                            <input type="password" className="form-control" value={password} onChange={(event) => setPassword(event.target.value)} />
+                            <input type="password" className="form-control" value={password} disabled onChange={(event) => setPassword(event.target.value)} />
                         </div>
                         <div className="col-md-6">
                             <label className="form-label">Username</label>
@@ -133,4 +134,4 @@ const ModalCreateUser = (props) => {
     );
 }
 
-export default ModalCreateUser;
+export default ModalUpdateUser;
